@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import {Header} from './components/Header';
-import {Footer} from './components/Footer';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {clickButton} from './actions';
 import './App.css';
 
 class App extends Component {
@@ -32,23 +33,36 @@ class App extends Component {
       .then(data => this.setState({name: data.title}))
   }
 
+  state = {
+    inputValue: ''
+  }
+  inputChange = event => {
+    this.setState({
+      inputValue: event.target.value
+    })
+  }
   render() {
+    const {newValue, clickButton} = this.props;
+    const {inputValue} = this.state;
     return (
       <>
-        <Header name={this.state.name} />
-        <div style={{width: '100vw'}}>
-          <button className="MyButton" onClick={this.updateHeader}>update header</button>
-          <form className="App" style={{ paddingTop: '10px' }} onSubmit={this.handleSubmit}>
-            <input type='text' value={this.state.name} onChange={this.handleChange} />
-            <button>
-              Click me!
-            </button>
-            <h1>texto</h1>
-          </form>
+        <div className="App" style={{ paddingTop: '10px' }}>
+          <input type='text' value={inputValue} onChange={this.inputChange} />
+          <button onClick={() => clickButton(inputValue)}>
+            Click me!
+          </button>
+          <h1>{newValue}</h1>
+          <h2>{inputValue}</h2>
         </div>
-        <Footer footer={this.state.footer} date={this.state.date}/>
       </>
     );
   }
 }
-export default App;
+
+const mapStateToProps = store => ({
+  newValue: store.clickState.newValue
+})
+
+const mapDispatchToProps = dispatch => bindActionCreators({clickButton}, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
